@@ -1,13 +1,11 @@
-package com.aicloud.web;
+package com.demo;
 
-import org.sike.permission.annotation.EnableAiCloudPermission;
+import org.sike.permission.annotation.EnableAiCloudPermissionServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @SpringBootApplication
-@EnableWebMvc
-@EnableAiCloudPermission
+@EnableAiCloudPermissionServer
 public class WebApplication {
 
     public static void main(String[] args) {
