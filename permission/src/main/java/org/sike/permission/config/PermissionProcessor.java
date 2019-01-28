@@ -62,8 +62,10 @@ public class PermissionProcessor implements ApplicationContextAware {
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         params.add("permission", permissionList);
         params.add("client", clientName);
-        PermissionRunnable permissionRunnable = new PermissionRunnable(serverUrl, params);
-        new Thread(permissionRunnable).start();
+        for(String url : serverUrl.split(",")) {//多个服务器轮流上报
+            PermissionRunnable permissionRunnable = new PermissionRunnable(url, params);
+            new Thread(permissionRunnable).start();
+        }
     }
 
     @Override

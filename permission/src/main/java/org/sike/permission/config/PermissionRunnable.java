@@ -37,15 +37,23 @@ public class PermissionRunnable implements Runnable {
             sb.append(serverUrl);
         }
         sb.append("/permission/register");
-        ResponseEntity<String> responseEntity = register(restTemplate, sb.toString(), req, 5000);
-        if (responseEntity != null && responseEntity.getStatusCode() != HttpStatus.OK) {
-            logger.warn(responseEntity.getBody());
-        } else {//发送成功后每隔3分钟再发送一次，兼容服务端重启异常
-            register(restTemplate, sb.toString(), req, 3 * 60000);
+        try {
+            ResponseEntity<String> responseEntity = register(restTemplate, sb.toString(), req, 5000, 10);
+            if (responseEntity != null) {
+                if (responseEntity.getStatusCode() != HttpStatus.OK) {
+                    logger.warn(responseEntity.getBody());
+                } else {//发送成功后每隔3分钟再发送一次，兼容服务端重启异常
+                    register(restTemplate, sb.toString(), req, 3 * 60000, 10);
+                }
+            } else {
+                logger.error("Unable to report permissions to server [" + serverUrl + "]");
+            }
+        } catch (Exception e) {
+            logger.error("Unable to report permissions to server [" + serverUrl + "]",e);
         }
     }
 
-    private ResponseEntity<String> register(RestTemplate restTemplate, String url, HttpEntity req, long intervalTime) {
+    private ResponseEntity<String> register(RestTemplate restTemplate, String url, HttpEntity req, long intervalTime, int retryCount) {
         try {
             Thread.sleep(intervalTime);
         } catch (InterruptedException e1) {
@@ -55,7 +63,11 @@ public class PermissionRunnable implements Runnable {
         try {
             responseEntity = restTemplate.postForEntity(url, req, String.class);
         } catch (RestClientException e) {
-            responseEntity = register(restTemplate, url, req, intervalTime);
+            if (retryCount > 0) {
+                responseEntity = register(restTemplate, url, req, intervalTime, --retryCount);
+            } else {
+                throw e;
+            }
         }
         return responseEntity;
     }
