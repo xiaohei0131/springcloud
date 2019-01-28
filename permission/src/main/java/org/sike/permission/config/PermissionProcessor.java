@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
@@ -40,6 +41,7 @@ public class PermissionProcessor implements ApplicationContextAware {
         // 取得对应Annotation映射，BeanName -- 实例
         Map<String, Object> annotationMap = applicationContext.getBeansWithAnnotation(Controller.class);
         AiCloudPermission permission;
+        RequestMapping mapping;
         JSONObject permissionObj;
         Object bean;
         for (Map.Entry<String, Object> ele : annotationMap.entrySet()) {
@@ -52,10 +54,15 @@ public class PermissionProcessor implements ApplicationContextAware {
                     }
                     permissionSet.add(permission.name());
                     permissionObj = new JSONObject();
-                    permissionObj.put("name", permission.name());
-                    permissionObj.put("desc", permission.desc());
+                    permissionObj.put("permission_code", permission.name());
+                    permissionObj.put("permission_name", permission.desc());
+                    mapping = method.getAnnotation(RequestMapping.class);
+                    if (mapping != null) {
+                        permissionObj.put("mapping", mapping);
+                    }
                     permissionList.add(permissionObj);
                 }
+
             }
         }
 
