@@ -10,8 +10,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
@@ -44,6 +42,7 @@ public class PermissionProcessor implements ApplicationContextAware {
         RequestMappingHandlerMapping mapping = applicationContext.getBean(RequestMappingHandlerMapping.class);
         // 取得对应Annotation映射，BeanName -- 实例
         Map<RequestMappingInfo, HandlerMethod> map = mapping.getHandlerMethods();
+        Map<String, Object> infoMap;
         RequestMappingInfo info;
         HandlerMethod method;
         RequestMethodsRequestCondition methodsRequestCondition;
@@ -57,6 +56,7 @@ public class PermissionProcessor implements ApplicationContextAware {
         List<String> headers;
         List<String> params;
         for (Map.Entry<RequestMappingInfo, HandlerMethod> m : map.entrySet()) {
+            infoMap = new HashMap<>();
             info = m.getKey();
             method = m.getValue();
             patternsRequestCondition = info.getPatternsCondition();
@@ -111,11 +111,8 @@ public class PermissionProcessor implements ApplicationContextAware {
             }
         }
 
-        MultiValueMap<String, Object> mvpParams = new LinkedMultiValueMap<>();
-        mvpParams.add("permission", JSONArray.toJSONString(permissionList));
-        mvpParams.add("client", clientName);
         for (String url : serverUrl.split(",")) {//多个服务器轮流上报
-            PermissionRunnable permissionRunnable = new PermissionRunnable(url, mvpParams);
+            PermissionRunnable permissionRunnable = new PermissionRunnable(url, clientName, permissionList);
             new Thread(permissionRunnable).start();
         }
     }

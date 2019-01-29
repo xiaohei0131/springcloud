@@ -1,14 +1,9 @@
 package org.sike.permission.config;
 
-import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.sike.permission.utils.RestTemplateUtil;
 import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -26,7 +21,7 @@ public class PermissionRunnable implements Runnable {
 
     @Override
     public void run() {
-        RestTemplate restTemplate = restTemplate();
+        RestTemplate restTemplate = RestTemplateUtil.getRestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         HttpEntity req = new HttpEntity(params, headers);
@@ -49,7 +44,7 @@ public class PermissionRunnable implements Runnable {
                 logger.error("Unable to report permissions to server [" + serverUrl + "]");
             }
         } catch (Exception e) {
-            logger.error("Unable to report permissions to server [" + serverUrl + "]",e);
+            logger.error("Unable to report permissions to server [" + serverUrl + "]", e);
         }
     }
 
@@ -72,17 +67,5 @@ public class PermissionRunnable implements Runnable {
         return responseEntity;
     }
 
-    private RestTemplate restTemplate() {
-        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
-        httpClientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(5, true)); // 重试次数
-        HttpClient httpClient = httpClientBuilder.build();
-        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient); // httpClient连接配置
-        clientHttpRequestFactory.setConnectTimeout(20000); // 连接超时
-        clientHttpRequestFactory.setReadTimeout(30000); // 数据读取超时时间
-        clientHttpRequestFactory.setConnectionRequestTimeout(20000); // 连接不够用的等待时间
-        RestTemplate restTemplate = new RestTemplateBuilder().build();
-        restTemplate.getMessageConverters().add(new FastJsonHttpMessageConverter());
-        restTemplate.setRequestFactory(clientHttpRequestFactory);
-        return restTemplate;
-    }
+
 }

@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "router", urlPatterns = "/*")
+//@WebServlet(name = "router", urlPatterns = "/*")
 public class RouterServlet extends HttpServlet {
     private static RouterUtil routerUtil = new RouterUtil();
 
