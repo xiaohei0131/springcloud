@@ -24,6 +24,7 @@ public class PermissionImportBeanDefinitionRegistrer implements ImportBeanDefini
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(PermissionProcessor.class.getName());
         builder.addPropertyValue("serverUrl", serverUrl());
         builder.addPropertyValue("clientName", clientName());
+        builder.addPropertyValue("version", version());
         // 将 PermissionProcessor 对象注册到 Spring 中
         beanDefinitionRegistry.registerBeanDefinition(PermissionProcessor.class.getName(), builder.getBeanDefinition());
     }
@@ -35,6 +36,10 @@ public class PermissionImportBeanDefinitionRegistrer implements ImportBeanDefini
 
     protected String clientName() {
         return this.getEnvironment().getProperty("aicloud.permission.client.name", String.class, "global");
+    }
+
+    protected String version() {
+        return this.getEnvironment().getProperty("aicloud.permission.version", String.class, String.valueOf(Integer.MIN_VALUE));
     }
 
     protected Environment getEnvironment() {

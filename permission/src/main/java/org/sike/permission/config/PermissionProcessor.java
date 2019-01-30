@@ -32,6 +32,7 @@ public class PermissionProcessor implements ApplicationContextAware {
     String serverUrl;
 
     String clientName;
+    String version;
 
     private static JSONArray permissionList = new JSONArray();
     private static Set<String> permissionSet = new HashSet<>();
@@ -114,6 +115,7 @@ public class PermissionProcessor implements ApplicationContextAware {
         MultiValueMap<String, Object> mvpParams = new LinkedMultiValueMap<>();
         mvpParams.add("permission", JSONArray.toJSONString(permissionList));
         mvpParams.add("client", clientName);
+        mvpParams.add("version", version);
         for (String url : serverUrl.split(",")) {//多个服务器轮流上报
             PermissionRunnable permissionRunnable = new PermissionRunnable(url, mvpParams);
             new Thread(permissionRunnable).start();
@@ -131,6 +133,10 @@ public class PermissionProcessor implements ApplicationContextAware {
 
     public void setClientName(String clientName) {
         this.clientName = clientName;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
 
