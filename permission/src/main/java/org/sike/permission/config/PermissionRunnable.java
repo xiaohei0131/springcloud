@@ -31,7 +31,7 @@ public class PermissionRunnable implements Runnable {
         } else {
             sb.append(serverUrl);
         }
-        sb.append("/permission/register");
+        sb.append("/aicloud.permission.register");
         try {
             ResponseEntity<String> responseEntity = register(restTemplate, sb.toString(), req, 5000, 10);
             if (responseEntity != null) {

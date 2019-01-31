@@ -1,6 +1,7 @@
 package com.aicloud.web;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 //@WebServlet(name = "router", urlPatterns = "/*")
+//@MultipartConfig(maxRequestSize = 20*1024*1024)
 public class RouterServlet extends HttpServlet {
     private static RouterUtil routerUtil = new RouterUtil();
 
